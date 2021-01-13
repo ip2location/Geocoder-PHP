@@ -47,9 +47,10 @@ final class GeoIP2 extends AbstractProvider implements Provider
     public function geocodeQuery(GeocodeQuery $query): Collection
     {
         $address = $query->getText();
+        $address = explode(',', $address)[0]; 
         $locale = $query->getLocale() ?: 'en'; // Default to English
         if (!filter_var($address, FILTER_VALIDATE_IP)) {
-            throw new UnsupportedOperation('The GeoIP2 provider does not support street addresses, only IP addresses.');
+            throw new UnsupportedOperation(sprintf('"%s" must be called with an IP addresses. Got "%s" instead.', __METHOD__, $address));
         }
 
         if ('127.0.0.1' === $address) {
@@ -110,6 +111,7 @@ final class GeoIP2 extends AbstractProvider implements Provider
      */
     private function executeQuery(string $address): string
     {
+        $address = explode(',', $address)[0]; 
         $uri = sprintf('file://geoip?%s', $address);
 
         try {
